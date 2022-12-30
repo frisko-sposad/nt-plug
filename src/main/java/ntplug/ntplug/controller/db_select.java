@@ -12,43 +12,66 @@ public class db_select {
 
     public static void main(String[] argv) throws SQLException {
 
-        System.out.println("Testing connection to PostgreSQL JDBC");
+//        System.out.println("Testing connection to PostgreSQL JDBC");
+//
+//        try {
+//            Class.forName("org.postgresql.Driver");
+//        } catch (ClassNotFoundException e) {
+//            System.out.println("PostgreSQL JDBC Driver is not found. Include it in your library path ");
+//            e.printStackTrace();
+//            return;
+//        }
+//
+//        System.out.println("PostgreSQL JDBC Driver successfully connected");
+//        Connection connection = null;
+//
+//        try {
+//            connection = DriverManager
+//                    .getConnection(DB_URL, USER, PASS);
+//
+//        } catch (SQLException e) {
+//            System.out.println("Connection Failed");
+//            e.printStackTrace();
+//            return;
+//        }
+//
+//        if (connection != null) {
+//            System.out.println("You successfully connected to database now");
+//        } else {
+//            System.out.println("Failed to make connection to database");
+//        }
 
         try {
-            Class.forName("org.postgresql.Driver");
-        } catch (ClassNotFoundException e) {
-            System.out.println("PostgreSQL JDBC Driver is not found. Include it in your library path ");
-            e.printStackTrace();
-            return;
-        }
+            // Создание соединения с базой данных
+            Connection connection = DriverManager.getConnection(DB_URL, USER, PASS);
 
-        System.out.println("PostgreSQL JDBC Driver successfully connected");
-        Connection connection = null;
+            // Создание оператора доступа к базе данных
+            Statement statement  = connection.createStatement();
 
-        try {
-            connection = DriverManager
-                    .getConnection(DB_URL, USER, PASS);
+            // Выполнение запроса к базе данных, получение набора данных
+            ResultSet resultSet = statement.executeQuery("SELECT * from users u LEFT JOIN emails e ON u.login = e.login");
 
-        } catch (SQLException e) {
-            System.out.println("Connection Failed");
-            e.printStackTrace();
-            return;
-        }
-
-        if (connection != null) {
-            System.out.println("You successfully connected to database now");
-        } else {
-            System.out.println("Failed to make connection to database");
-        }
-
-        try {
-            Statement st = connection.createStatement();
-            ResultSet rs = st.executeQuery("SELECT * from users u where u.login = 'user'");
-            while (rs.next()){
-                System.out.println(rs.getString(3));
+            // Выводим название полей
+            for (int j = 1; j <= resultSet.getMetaData().getColumnCount(); j++) {
+                System.out.print(resultSet.getMetaData().getColumnName(j) + "\t\t");
             }
-            rs.close();
-            st.close();
+            System.out.println();
+
+            // Выводим данные
+            while (resultSet.next()) {
+                for (int j = 1; j <= resultSet.getMetaData().getColumnCount(); j++) {
+                    System.out.print(resultSet.getString(j) + "\t\t");
+                }
+                System.out.println();
+            }
+
+
+            System.out.println();
+            while (resultSet.next()){
+                System.out.println(resultSet.getString(3));
+            }
+            resultSet.close();
+            statement.close();
         } catch (Exception e) {
             System.out.println("Error 1234");
         }
