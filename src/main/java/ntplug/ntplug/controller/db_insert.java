@@ -23,19 +23,18 @@ public class db_insert {
 
 // Создание соединения с базой данных, оператора доступа к базе данных,выполнение запроса к базе данных, получение набора данных
         try (Connection connection = DriverManager.getConnection(DB_URL, USER, PASS);
-             Statement statement  = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery(
-                     String.format(
-                             "INSERT INTO public.users (login, password, date) VALUES('" + login +"', '"+ password +"', '"+ new Date()+"');"
-                     )
+
+             PreparedStatement preparedStatement = connection.prepareStatement(
+                     "INSERT INTO public.users (login, password) VALUES(?,?)"
              );
                 ) {
-                System.out.println("Данные добавлены");
+            preparedStatement.setString(1, login );
+            preparedStatement.setString(2, password);
+            preparedStatement.executeUpdate();
 
+            System.out.println("Данные добавлены");
         } catch (SQLException e) {
-            System.out.println("Error");
+            System.out.println("Error" + e);
         }
-
-
     }
 }
